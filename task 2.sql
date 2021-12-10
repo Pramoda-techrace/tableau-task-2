@@ -1,26 +1,27 @@
-use employees_mod;
 SELECT 
-    de.dept_name,
-    e.emp_no,
-    YEAR(d.from_date) calender,
-    e.gender,
-    d.from_date,
-    d.to_date,
+    d.dept_name,
+    ee.gender,
+    dm.emp_no,
+    dm.from_date,
+    dm.to_date,
+    e.calender_year,
     case 
-		when year(d.from_date)>= year(d.from_date) <= year(d.to_date) then 1
+		when year(dm.to_date) >= e.calender_year and year(dm.from_date) <= e.calender_year then 1 
         else 0
         end as active
-    
-FROM 
-    t_dept_manager d
+FROM
+    (SELECT 
+        YEAR(e.hire_date) AS calender_year
+    FROM
+        t_employees e
+    GROUP BY calender_year) e
+        CROSS JOIN
+    t_dept_manager dm
         JOIN
-    t_departments de ON de.dept_no = d.dept_no
+    t_departments d ON d.dept_no = dm.dept_no
         JOIN
-    t_employees e ON e.emp_no = d.emp_no
-where year(d.from_date) >=1990
-ORDER BY calender ASC;
-
-
+    t_employees ee ON ee.emp_no = dm.emp_no
+ORDER BY dm.emp_no , calender_year;
 
 
 
